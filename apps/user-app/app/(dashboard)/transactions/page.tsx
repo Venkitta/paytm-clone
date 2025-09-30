@@ -51,7 +51,7 @@ async function getTransactions() {
 export default async function() {
     const transactions = await getTransactions();
 
-    return <div className="w-full p-4">
+    return <div className="w-full h-screen p-4">
         <div className="mb-8">
             <h1 className="text-3xl font-bold text-[#6a51a6] mb-2">Transactions</h1>
             <p className="text-gray-600">View and manage all your transaction history.</p>
