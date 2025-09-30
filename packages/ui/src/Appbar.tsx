@@ -39,7 +39,7 @@ export const Appbar = ({
         <Button 
           onClick={user ? onSignout : onSignin}
         >
-          {user ? "Logout" : "Login"}
+          Logout
         </Button>
       </div>
     </header>
