@@ -42,4 +42,4 @@ jobs:
             sudo docker pull venkitta/paytm-clone:latest
             sudo docker stop paytm-clone || true
             sudo docker rm paytm-clone || true
-            sudo docker run -d --name paytm-clone -p 3005:3000 venkitta/paytm-clone:latest
+            sudo docker run -d --name paytm-clone -p 3005:3000 -e DATABASE_URL="${{ secrets.DATABASE_URL }}" venkitta/paytm-clone:latest
