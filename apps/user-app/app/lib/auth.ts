@@ -10,10 +10,12 @@ export const authOptions = {
             phone: { label: "Phone number", type: "text", placeholder: "1231231231", required: true },
             password: { label: "Password", type: "password", required: true }
           },
-          // TODO: User credentials type from next-aut
+
           async authorize(credentials: any) {
-            // Do zod validation, OTP validation here
-            const hashedPassword = await bcrypt.hash(credentials.password, 10);
+            if (!credentials?.phone || !credentials?.password) {
+                return null;
+            }
+
             const existingUser = await db.user.findFirst({
                 where: {
                     number: credentials.phone
@@ -32,30 +34,15 @@ export const authOptions = {
                 return null;
             }
 
-            try {
-                const user = await db.user.create({
-                    data: {
-                        number: credentials.phone,
-                        password: hashedPassword
-                    }
-                });
-            
-                return {
-                    id: user.id.toString(),
-                    name: user.name,
-                    email: user.number
-                }
-            } catch(e) {
-                console.error(e);
-            }
-
             return null
           },
         })
     ],
     secret: process.env.NEXTAUTH_SECRET || "secret",
+    pages: {
+        signIn: '/auth/signin'
+    },
     callbacks: {
-        // TODO: can u fix the type here? Using any is bad
         async session({ token, session }: any) {
             session.user.id = token.sub
 

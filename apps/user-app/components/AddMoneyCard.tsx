@@ -8,16 +8,17 @@ import { createOnRampTransaction } from "../app/lib/actions/createOnRamptxn";
 
 const SUPPORTED_BANKS = [{
     name: "HDFC Bank",
-    redirectUrl: "https://netbanking.hdfcbank.com"
+    redirectUrl: "/bank-simulator"
 }, {
     name: "Axis Bank",
-    redirectUrl: "https://www.axisbank.com/"
+    redirectUrl: "/bank-simulator"
 }];
 
 export const AddMoney = () => {
     const [redirectUrl, setRedirectUrl] = useState(SUPPORTED_BANKS[0]?.redirectUrl);
     const [amount, setAmount] = useState(0);
     const [provider, setProvider] = useState(SUPPORTED_BANKS[0]?.name || "");
+    const [loading, setLoading] = useState(false);
 
     return <Card title="Add Money">
     <div className="w-full">
@@ -36,10 +37,39 @@ export const AddMoney = () => {
         }))} />
         <div className="flex justify-center pt-4">
             <Button onClick={async () => {
-                await createOnRampTransaction(amount * 100, provider)
-                window.location.href = redirectUrl || "";
-            }}>
-            Add Money
+                if (!amount || amount <= 0) {
+                    alert("Please enter a valid amount");
+                    return;
+                }
+
+                setLoading(true);
+            try {
+                const result = await createOnRampTransaction(amount * 100, provider);
+
+                if (result.success && result.token){
+                    const bankURL = new URL(redirectUrl || "/bank-simulator", window.location.origin);
+                    bankURL.searchParams.set('amount', amount.toString());
+                    bankURL.searchParams.set('token', result.token);
+                    bankURL.searchParams.set('userId', result.userId.toString());
+                    bankURL.searchParams.set('returnURL', '/add');
+                    bankURL.searchParams.set('provider', provider);
+
+                    window.location.href = bankURL.toString();
+                    }
+
+                else{
+                    alert(result.message || "Failed to create transaction");
+                    }   
+                } catch (error) {
+                    console.error("Error: ", error);
+                    alert("Payment Failed. Please try again");
+                } finally{
+                    setLoading(false);
+                }
+                
+            }}
+            >
+            {loading ? "Processing..." : "Add Money"}
             </Button>
         </div>
     </div>

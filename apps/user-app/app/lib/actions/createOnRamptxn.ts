@@ -13,18 +13,29 @@ export async function createOnRampTransaction(amount: number, provider: string) 
             message: "User not logged in"
         }
     }
-    await prisma.onRampTransaction.create({
-        data: {
-            userId: Number(userId), // 1
-            amount: amount,
-            status: "Processing",
-            startTime: new Date(),
-            provider,
-            token: token
-        }
-    })
+    try {
+            await prisma.onRampTransaction.create({
+                data: {
+                    userId: Number(userId), // 1
+                    amount: amount,
+                    status: "Processing",
+                    startTime: new Date(),
+                    provider,
+                    token: token
+                }
+            })
 
-    return {
-        message: "On ramp transaction added"
-    }
+            return {
+                success: true,
+                message: "On ramp transaction added",
+                token: token,
+                userId: userId
+            }
+        } catch(error) {
+            console.log("Transaction creation error:", error);
+            return {
+                success: false,
+                message: "Error creating transaction"
+            }
+        }
 }

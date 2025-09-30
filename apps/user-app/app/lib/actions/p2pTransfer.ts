@@ -22,7 +22,8 @@ export async function p2pTransfer(to: string, amount: number) {
             message: "User not found"
         }
     }
-    await prisma.$transaction(async (tx) => {
+  try {
+    const transfer = await prisma.$transaction(async (tx) => {
            await tx.$queryRaw`SELECT * FROM "Balance" WHERE "userId" = ${Number(from)} FOR UPDATE`;
 
           const fromBalance = await tx.balance.findUnique({
@@ -39,10 +40,10 @@ export async function p2pTransfer(to: string, amount: number) {
 
           await tx.balance.update({
             where: { userId: toUser.id },
-            data: { amount: { increment: amount } },
+            data: { locked: { increment: amount } },
           });
 
-          await tx.p2pTransfer.create({
+          return tx.p2pTransfer.create({
             data: {
                 fromUserId: Number(from),
                 toUserId: toUser.id,
@@ -50,6 +51,29 @@ export async function p2pTransfer(to: string, amount: number) {
                 timestamp: new Date()
             }
           })
-          // locking
     });
+
+    setTimeout(async () => {
+            await prisma.$transaction(async (tx) => {
+                const receiverBalance = await tx.balance.findUnique({
+                    where: { userId: toUser.id },
+                });
+
+                if (receiverBalance && receiverBalance.locked >= amount) {
+                    await tx.balance.update({
+                        where: { userId: toUser.id },
+                        data: {
+                            locked: { decrement: amount },
+                            amount: { increment: amount },
+                        },
+                    });
+                }
+            });
+        }, 30000);
+
+    return { success: true, transfer };
+
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
 }

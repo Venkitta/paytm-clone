@@ -1,12 +1,12 @@
 import { Card } from "@repo/ui/card"
 
-export const OnRampTransactions = ({
+export const AllTransactions = ({
     transactions
 }: {
     transactions: {
+        type: "onramp" | "p2p",
         time: Date,
         amount: number,
-        // TODO: Can the type of `status` be more specific?
         status: string,
         provider: string
     }[]
@@ -20,17 +20,23 @@ export const OnRampTransactions = ({
     }
     return <Card title="Recent Transactions">
         <div className="pt-2">
-            {transactions.map(t => <div className="flex justify-between">
+            {transactions.map((t, i) => <div key = {i} className="flex justify-between border-b py-2">
                 <div>
-                    <div className="text-sm">
-                        Received INR
+                    <div className="text-sm font-medium">
+                        {t.type === "onramp"
+                            ? `Deposit via ${t.provider}`
+                            : t.status === "Sent"
+                            ? `Sent to ${t.provider.replace("To ", "")}`
+                            : `Received from ${t.provider.replace("From ", "")}`}
                     </div>
                     <div className="text-slate-600 text-xs">
                         {t.time.toDateString()}
                     </div>
                 </div>
                 <div className="flex flex-col justify-center">
-                    + Rs {t.amount / 100}
+                    <span className={t.status === "Sent" ? "text-red-600" : "text-green-600"}>
+                        {t.status === "Sent" ? `- Rs ${t.amount/100}` : `+ Rs ${t.amount/100}`}
+                    </span>
                 </div>
 
             </div>)}
