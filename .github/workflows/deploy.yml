@@ -28,6 +28,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: venkitta/paytm-clone:latest
+          no-cache: true
+          pull: true
 
       - name: Verify Pushed Image
         run: docker pull venkitta/paytm-clone:latest
@@ -43,3 +45,4 @@ jobs:
             sudo docker stop paytm-clone || true
             sudo docker rm paytm-clone || true
             sudo docker run -d --name paytm-clone -p 3005:3000 -e DATABASE_URL="${{ secrets.DATABASE_URL }}" venkitta/paytm-clone:latest
+            sudo docker image prune -f
