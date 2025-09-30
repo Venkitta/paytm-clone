@@ -43,7 +43,7 @@ export default async function() {
     const balance = await getDashboardData()
     const data = await getDashboardData();
 
-    return <div className="p-4 w-full">
+    return <div className="p-4 w-full h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#6a51a6] mb-2">Dashboard</h1>
         <p className="text-gray-600">Welcome back! Here's your account overview.</p>

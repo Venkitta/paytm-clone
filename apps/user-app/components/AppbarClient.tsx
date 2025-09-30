@@ -3,7 +3,13 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { Appbar } from "@repo/ui/appbar";
 import { useRouter } from "next/navigation";
 
-export function AppbarClient() {
+export function AppbarClient({
+  onMenuToggle,
+  showMenuButton = false 
+}: { 
+  onMenuToggle?: () => void,
+  showMenuButton?: boolean
+}) {
   const session = useSession();
   const router = useRouter();
 
@@ -14,7 +20,9 @@ export function AppbarClient() {
                 await signOut({redirect: false});
                 router.push("/auth/signin")
               }} 
-              user={session.data?.user} />
+              user={session.data?.user} 
+              onMenuToggle={onMenuToggle}
+              showMenuButton={showMenuButton}/>
    </div>
   );
 }

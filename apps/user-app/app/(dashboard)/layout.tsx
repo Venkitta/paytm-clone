@@ -1,3 +1,5 @@
+"use client"
+import {useState} from "react"
 import { AppbarClient } from "../../components/AppbarClient";
 import { SidebarItem } from "../../components/SidebarItem";
 
@@ -6,22 +8,44 @@ export default function Layout({
 }: {
   children: React.ReactNode;
 }): JSX.Element {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (<div>
     <div className="min-w-screen bg-[#ebe6e6]">
-        <AppbarClient />
+        <AppbarClient 
+            onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
+            showMenuButton={true}
+          />
     </div>
+
+    {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
     <div className="flex">
-        <div className="w-72 border-r border-slate-300 min-h-screen mr-4 pt-8">
+        <div className={`
+            fixed lg:static
+            w-72 border-r border-slate-300 min-h-screen pt-8 bg-[#EBE6E6]
+            transition-transform duration-300 ease-in-out z-40
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            lg:translate-x-0
+          `}>
             <div>
-                <SidebarItem href={"/dashboard"} icon={<HomeIcon />} title="Home" />
-                <SidebarItem href={"/add"} icon={<AddIcon />} title="Add Money" />
-                <SidebarItem href={"/transactions"} icon={<TransactionsIcon />} title="Transactions" />
-                <SidebarItem href={"/p2p"} icon={<P2pIcon />} title="P2P Transfer" />
+                <SidebarItem href={"/dashboard"} icon={<HomeIcon />} title="Home" onClick={() => setSidebarOpen(false)} />
+                <SidebarItem href={"/add"} icon={<AddIcon />} title="Add Money" onClick={() => setSidebarOpen(false)}/>
+                <SidebarItem href={"/transactions"} icon={<TransactionsIcon />} title="Transactions" onClick={() => setSidebarOpen(false)}/>
+                <SidebarItem href={"/p2p"} icon={<P2pIcon />} title="P2P Transfer" onClick={() => setSidebarOpen(false)}/>
             </div>
-        </div>
+        </div >
+          <div className="flex-1 w-full lg:ml-4 p-4 lg:p-0">
             {children}
+          </div>
     </div>
     </div>
+
   );
 }
 
