@@ -65,7 +65,7 @@ function BankSimulatorContent() {
                 {/* Payment Info */}
                 <div className="p-8 text-center">
                     <div className="text-4xl font-bold text-blue-800 mb-6">
-                        <span className="mr-1">₹</span>{amount}
+                        <span className="mr-5">₹</span>{amount}
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3">
