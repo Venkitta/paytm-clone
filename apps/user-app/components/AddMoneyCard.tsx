@@ -62,7 +62,7 @@ export const AddMoney = () => {
                     }   
                 } catch (error) {
                     console.error("Error: ", error);
-                    alert("Payment Failed. Please try again");
+                    alert("Payment Failed. Please try again ");
                 } finally{
                     setLoading(false);
                 }
